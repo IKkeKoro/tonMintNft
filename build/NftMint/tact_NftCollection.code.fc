@@ -1,0 +1,385 @@
+#pragma version =0.4.3;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
+#include "tact_NftCollection.headers.fc";
+#include "tact_NftCollection.stdlib.fc";
+#include "tact_NftCollection.storage.fc";
+
+;;
+;; Contract NftCollection functions
+;;
+
+(slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $NftCollection$_contract_init(slice $owner, cell $content, slice $royalty_destination, int $numerator, int $denominator, int $publicPrice, int $wlPrice, int $publicSaleTime, int $wlSaleTime, int $maxMint, int $seqno) impure inline_ref {
+    var (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress)) = (null(), 0, null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null());
+    $self'owner = $owner;
+    $self'content = $content;
+    $self'royalty_destination = $royalty_destination;
+    $self'numerator = $numerator;
+    $self'denominator = $denominator;
+    $self'seqno = $seqno;
+    $self'mintedByWallet = null();
+    $self'wlAddress = null();
+    $self'maxMint = $maxMint;
+    $self'publicSaleTime = (now() + $publicSaleTime);
+    $self'wlSaleTime = (now() + $wlSaleTime);
+    $self'publicPrice = $publicPrice;
+    $self'wlPrice = $wlPrice;
+    return ($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress);
+}
+
+((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell), (int, cell, slice)) $NftCollection$_fun_get_collection_data((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self) impure inline_ref {
+    var (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress)) = $self;
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), $CollectionData$_constructor_next_index_content_owner($self'next_index, $self'content, $self'owner));
+}
+
+((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell), slice) $NftCollection$_fun_get_nft_address_by_index((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self, int $index) impure inline_ref {
+    var (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress)) = $self;
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), $global_contractAddress($NftItem$_init_child(__tact_context_sys, my_address(), $index)));
+}
+
+((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell), cell) $NftCollection$_fun_get_nft_content((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self, int $index, cell $individual_content) impure inline_ref {
+    var (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress)) = $self;
+    tuple $b = __tact_string_builder_start_string();
+    slice $ic = __tact_slice_to_str($Cell$_fun_asSlice($individual_content));
+    $b~__tact_string_builder_append($ic);
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), __tact_string_builder_end($b));
+}
+
+((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell), int) $NftCollection$_fun_wlPrice((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self) impure inline_ref {
+    var (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress)) = $self;
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), $self'wlPrice);
+}
+
+((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell), int) $NftCollection$_fun_publicPrice((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self) impure inline_ref {
+    var (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress)) = $self;
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), $self'publicPrice);
+}
+
+((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell), int) $NftCollection$_fun_wlSaleTime((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self) impure inline_ref {
+    var (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress)) = $self;
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), $self'wlSaleTime);
+}
+
+((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell), int) $NftCollection$_fun_publicSaleTime((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self) impure inline_ref {
+    var (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress)) = $self;
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), $self'publicSaleTime);
+}
+
+((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell), slice) $NftCollection$_fun_owner((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self) impure inline_ref {
+    var (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress)) = $self;
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), $self'owner);
+}
+
+((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell), int) $NftCollection$_fun_wlAddress((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self, slice $wallet) impure inline_ref {
+    var (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress)) = $self;
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), __tact_not_null(__tact_dict_get_slice_int($self'wlAddress, 267, $wallet, 1)));
+}
+
+((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell), (int, int, slice)) $NftCollection$_fun_royalty_params((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self) impure inline_ref {
+    var (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress)) = $self;
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), $NftRoyaltyParams$_constructor_numerator_denominator_royalty_destination($self'numerator, $self'denominator, $self'royalty_destination));
+}
+
+;;
+;; Receivers of a Contract NftCollection
+;;
+
+(((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell)), ()) $NftCollection$_internal_binary_RequestNftDeploy((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self, (int, int, slice, cell, int) $msg) impure inline {
+    var ($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress) = $self;
+    var ($msg'index, $msg'amount, $msg'owner, $msg'content, $msg'seqno) = $msg;
+    throw_unless(13257, ($msg'seqno == $self'seqno));
+    throw_unless(44083, ($msg'index <= $self'next_index));
+    int $wl = false;
+    if ((~ null?(__tact_dict_get_slice_int($self'wlAddress, 267, __tact_context_get_sender(), 1)))) {
+        $wl = __tact_not_null(__tact_dict_get_slice_int($self'wlAddress, 267, __tact_context_get_sender(), 1));
+    }
+    int $mintedAmount = 0;
+    if ((~ null?(__tact_dict_get_slice_int($self'mintedByWallet, 267, __tact_context_get_sender(), 257)))) {
+        $mintedAmount = __tact_not_null(__tact_dict_get_slice_int($self'mintedByWallet, 267, __tact_context_get_sender(), 257));
+    }
+    int $priceForNft = $self'publicPrice;
+    int $startTime = $self'publicSaleTime;
+    if (($wl == true)) {
+        $priceForNft = $self'wlPrice;
+        $startTime = $self'wlSaleTime;
+    }
+    throw_unless(10047, (now() >= $startTime));
+    throw_unless(22415, ($mintedAmount < $self'maxMint));
+    $self'mintedByWallet~__tact_dict_set_slice_int(267, __tact_context_get_sender(), ($mintedAmount + 1), 257);
+    var ($nft_init'code, $nft_init'data) = $NftItem$_init_child(__tact_context_sys, my_address(), $msg'index);
+    slice $nft_address = $global_contractAddress(($nft_init'code, $nft_init'data));
+    $global_send($SendParameters$_constructor_to_value_mode_bounce_data_code_body($nft_address, $msg'amount, 1, false, $nft_init'data, $nft_init'code, $NftDeploy$_store_cell($NftDeploy$_constructor_index_owner_editor_content_royalty_destination_numerator_denominator($msg'index, $msg'owner, $self'owner, $msg'content, $self'royalty_destination, $self'numerator, $self'denominator))));
+    if (($msg'index == $self'next_index)) {
+        $self'next_index = ($self'next_index + 1);
+    }
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), ());
+}
+
+(((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell)), ()) $NftCollection$_internal_binary_ChangeOwner((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self, (slice) $msg) impure inline {
+    var ($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress) = $self;
+    var ($msg'owner) = $msg;
+    throw_unless(4429, ( __tact_slice_eq_bits(__tact_context_get_sender(), $self'owner) ));
+    $self'owner = $msg'owner;
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), ());
+}
+
+(((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell)), ()) $NftCollection$_internal_binary_ChangeWlPrice((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self, (int) $msg) impure inline {
+    var ($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress) = $self;
+    var ($msg'wlPrice) = $msg;
+    throw_unless(4429, ( __tact_slice_eq_bits(__tact_context_get_sender(), $self'owner) ));
+    $self'wlPrice = $msg'wlPrice;
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), ());
+}
+
+(((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell)), ()) $NftCollection$_internal_binary_ChangeMaxMint((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self, (int) $msg) impure inline {
+    var ($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress) = $self;
+    var ($msg'maxMint) = $msg;
+    throw_unless(4429, ( __tact_slice_eq_bits(__tact_context_get_sender(), $self'owner) ));
+    $self'maxMint = $msg'maxMint;
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), ());
+}
+
+(((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell)), ()) $NftCollection$_internal_binary_ChangePublicPrice((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self, (int) $msg) impure inline {
+    var ($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress) = $self;
+    var ($msg'publicPrice) = $msg;
+    throw_unless(4429, ( __tact_slice_eq_bits(__tact_context_get_sender(), $self'owner) ));
+    $self'publicPrice = $msg'publicPrice;
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), ());
+}
+
+(((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell)), ()) $NftCollection$_internal_binary_ChangeWlTime((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self, (int) $msg) impure inline {
+    var ($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress) = $self;
+    var ($msg'wlSaleTime) = $msg;
+    throw_unless(4429, ( __tact_slice_eq_bits(__tact_context_get_sender(), $self'owner) ));
+    $self'wlSaleTime = (now() + $msg'wlSaleTime);
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), ());
+}
+
+(((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell)), ()) $NftCollection$_internal_binary_ChangePublicTime((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self, (int) $msg) impure inline {
+    var ($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress) = $self;
+    var ($msg'publicSaleTime) = $msg;
+    throw_unless(4429, ( __tact_slice_eq_bits(__tact_context_get_sender(), $self'owner) ));
+    $self'publicSaleTime = $msg'publicSaleTime;
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), ());
+}
+
+(((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell)), ()) $NftCollection$_internal_binary_ChangeWl((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self, (slice, int) $msg) impure inline {
+    var ($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress) = $self;
+    var ($msg'wallet, $msg'bool) = $msg;
+    throw_unless(4429, ( __tact_slice_eq_bits(__tact_context_get_sender(), $self'owner) ));
+    $self'wlAddress~__tact_dict_set_slice_int(267, $msg'wallet, $msg'bool, 1);
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), ());
+}
+
+(((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell)), ()) $NftCollection$_internal_binary_Deploy((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self, (int) $deploy) impure inline {
+    var ($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress) = $self;
+    var ($deploy'queryId) = $deploy;
+    ($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress)~$NftCollection$_fun_notify($DeployOk$_store_cell($DeployOk$_constructor_queryId($deploy'queryId)));
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), ());
+}
+
+(((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell)), ()) $NftCollection$_internal_binary_NftGetRoyaltyParams((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) $self, (int) $msg) impure inline {
+    var ($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress) = $self;
+    var ($msg'query_id) = $msg;
+    $global_send($SendParameters$_constructor_to_value_mode_body(__tact_context_get_sender(), 0, 64, $NftReportRoyaltyParams$_store_cell($NftReportRoyaltyParams$_constructor_query_id_numerator_denominator_destination($msg'query_id, $self'numerator, $self'denominator, $self'royalty_destination))));
+    return (($self'owner, $self'next_index, $self'content, $self'royalty_destination, $self'numerator, $self'denominator, $self'seqno, $self'maxMint, $self'publicSaleTime, $self'wlSaleTime, $self'wlPrice, $self'publicPrice, $self'mintedByWallet, $self'wlAddress), ());
+}
+
+;;
+;; Get methods of a Contract NftCollection
+;;
+
+_ %get_collection_data() method_id(102491) {
+    var self = $NftCollection$_contract_load();
+    var res = self~$NftCollection$_fun_get_collection_data();
+    return $CollectionData$_to_external(res);
+}
+
+_ %get_nft_address_by_index(int $$index) method_id(92067) {
+    int $index = $$index;
+    var self = $NftCollection$_contract_load();
+    var res = self~$NftCollection$_fun_get_nft_address_by_index($index);
+    return res;
+}
+
+_ %get_nft_content(int $$index, cell $$individual_content) method_id(68445) {
+    int $index = $$index;
+    cell $individual_content = $$individual_content;
+    var self = $NftCollection$_contract_load();
+    var res = self~$NftCollection$_fun_get_nft_content($index, $individual_content);
+    return res;
+}
+
+_ %wlPrice() method_id(70769) {
+    var self = $NftCollection$_contract_load();
+    var res = self~$NftCollection$_fun_wlPrice();
+    return res;
+}
+
+_ %publicPrice() method_id(118959) {
+    var self = $NftCollection$_contract_load();
+    var res = self~$NftCollection$_fun_publicPrice();
+    return res;
+}
+
+_ %wlSaleTime() method_id(70417) {
+    var self = $NftCollection$_contract_load();
+    var res = self~$NftCollection$_fun_wlSaleTime();
+    return res;
+}
+
+_ %publicSaleTime() method_id(122638) {
+    var self = $NftCollection$_contract_load();
+    var res = self~$NftCollection$_fun_publicSaleTime();
+    return res;
+}
+
+_ %owner() method_id(83229) {
+    var self = $NftCollection$_contract_load();
+    var res = self~$NftCollection$_fun_owner();
+    return res;
+}
+
+_ %wlAddress(slice $$wallet) method_id(124649) {
+    slice $wallet = __tact_verify_address($$wallet);
+    var self = $NftCollection$_contract_load();
+    var res = self~$NftCollection$_fun_wlAddress($wallet);
+    return res;
+}
+
+_ %royalty_params() method_id(85719) {
+    var self = $NftCollection$_contract_load();
+    var res = self~$NftCollection$_fun_royalty_params();
+    return $NftRoyaltyParams$_to_external(res);
+}
+
+_ supported_interfaces() method_id {
+    return (
+        "org.ton.introspection.v0"H >> 128,
+        "org.ton.abi.ipfs.v0"H >> 128,
+        "org.ton.deploy.lazy.v0"H >> 128,
+        "org.ton.chain.workchain.v0"H >> 128
+    );
+}
+
+_ get_abi_ipfs() method_id {
+    return "ipfs://QmUxNjJRvWxzETdcuWDkJukhpb2AWChiitokbYDaSexYAe";
+}
+
+_ lazy_deployment_completed() method_id {
+    return get_data().begin_parse().load_int(1);
+}
+
+;;
+;; Routing of a Contract NftCollection
+;;
+
+((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell), int) $NftCollection$_contract_router_internal((slice, int, cell, slice, int, int, int, int, int, int, int, int, cell, cell) self, int msg_bounced, slice in_msg) impure inline_ref {
+    ;; Handle bounced messages
+    if (msg_bounced) {
+        return (self, true);
+    }
+    
+    ;; Parse incoming message
+    int op = 0;
+    if (slice_bits(in_msg) >= 32) {
+        op = in_msg.preload_uint(32);
+    }
+    
+    
+    ;; Receive RequestNftDeploy message
+    if (op == 1849924157) {
+        var msg = in_msg~$RequestNftDeploy$_load();
+        self~$NftCollection$_internal_binary_RequestNftDeploy(msg);
+        return (self, true);
+    }
+    
+    ;; Receive ChangeOwner message
+    if (op == 2242002949) {
+        var msg = in_msg~$ChangeOwner$_load();
+        self~$NftCollection$_internal_binary_ChangeOwner(msg);
+        return (self, true);
+    }
+    
+    ;; Receive ChangeWlPrice message
+    if (op == 3680101118) {
+        var msg = in_msg~$ChangeWlPrice$_load();
+        self~$NftCollection$_internal_binary_ChangeWlPrice(msg);
+        return (self, true);
+    }
+    
+    ;; Receive ChangeMaxMint message
+    if (op == 1488777995) {
+        var msg = in_msg~$ChangeMaxMint$_load();
+        self~$NftCollection$_internal_binary_ChangeMaxMint(msg);
+        return (self, true);
+    }
+    
+    ;; Receive ChangePublicPrice message
+    if (op == 2289978970) {
+        var msg = in_msg~$ChangePublicPrice$_load();
+        self~$NftCollection$_internal_binary_ChangePublicPrice(msg);
+        return (self, true);
+    }
+    
+    ;; Receive ChangeWlTime message
+    if (op == 3717536986) {
+        var msg = in_msg~$ChangeWlTime$_load();
+        self~$NftCollection$_internal_binary_ChangeWlTime(msg);
+        return (self, true);
+    }
+    
+    ;; Receive ChangePublicTime message
+    if (op == 2323106640) {
+        var msg = in_msg~$ChangePublicTime$_load();
+        self~$NftCollection$_internal_binary_ChangePublicTime(msg);
+        return (self, true);
+    }
+    
+    ;; Receive ChangeWl message
+    if (op == 2979666435) {
+        var msg = in_msg~$ChangeWl$_load();
+        self~$NftCollection$_internal_binary_ChangeWl(msg);
+        return (self, true);
+    }
+    
+    ;; Receive Deploy message
+    if (op == 2490013878) {
+        var msg = in_msg~$Deploy$_load();
+        self~$NftCollection$_internal_binary_Deploy(msg);
+        return (self, true);
+    }
+    
+    ;; Receive NftGetRoyaltyParams message
+    if (op == 1765620048) {
+        var msg = in_msg~$NftGetRoyaltyParams$_load();
+        self~$NftCollection$_internal_binary_NftGetRoyaltyParams(msg);
+        return (self, true);
+    }
+    
+    return (self, false);
+}
+
+() recv_internal(int msg_value, cell in_msg_cell, slice in_msg) impure {
+    
+    ;; Context
+    var cs = in_msg_cell.begin_parse();
+    var msg_flags = cs~load_uint(4);
+    var msg_bounced = -(msg_flags & 1);
+    slice msg_sender_addr = __tact_verify_address(cs~load_msg_addr());
+    __tact_context = (msg_bounced, msg_sender_addr, msg_value, cs);
+    __tact_context_sender = msg_sender_addr;
+    
+    ;; Load contract data
+    var self = $NftCollection$_contract_load();
+    
+    ;; Handle operation
+    int handled = self~$NftCollection$_contract_router_internal(msg_bounced, in_msg);
+    
+    ;; Throw if not handled
+    throw_unless(130, handled);
+    
+    ;; Persist state
+    $NftCollection$_contract_store(self);
+}
